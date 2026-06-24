@@ -1,0 +1,22 @@
+R_DEF: Internal format may change without notice
+local
+color azul_oscuro
+color azul_primario
+color fondo
+color naranja_primario
+color verde_primario
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+string channel_cobros_id
+string channel_cobros_name
+string channel_recordatorios_id
+string channel_recordatorios_name
+string nav_ajustes
+string nav_calendario
+string nav_consultas
+string nav_inicio
+string nav_mantenimientos
+string nav_montajes
+style Theme.ClimaPro
+xml file_paths

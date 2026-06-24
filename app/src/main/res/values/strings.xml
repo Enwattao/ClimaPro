@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ClimaPro</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_calendario">Calendario</string>
+    <string name="nav_montajes">Montajes</string>
+    <string name="nav_mantenimientos">Mant.</string>
+    <string name="nav_consultas">Consultas</string>
+    <string name="nav_ajustes">Ajustes</string>
+    <string name="channel_recordatorios_id">climapro_recordatorios</string>
+    <string name="channel_recordatorios_name">Recordatorios de trabajo</string>
+    <string name="channel_cobros_id">climapro_cobros</string>
+    <string name="channel_cobros_name">Cobros pendientes</string>
+</resources>

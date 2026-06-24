@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="azul_oscuro">#FF1A1F3A</color>
+    <color name="azul_primario">#FF4A6CF7</color>
+    <color name="fondo">#FFF0F2F7</color>
+    <color name="naranja_primario">#FFFF8C3A</color>
+    <color name="verde_primario">#FF22C76B</color>
+    <string name="app_name">ClimaPro</string>
+    <string name="channel_cobros_id">climapro_cobros</string>
+    <string name="channel_cobros_name">Cobros pendientes</string>
+    <string name="channel_recordatorios_id">climapro_recordatorios</string>
+    <string name="channel_recordatorios_name">Recordatorios de trabajo</string>
+    <string name="nav_ajustes">Ajustes</string>
+    <string name="nav_calendario">Calendario</string>
+    <string name="nav_consultas">Consultas</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_mantenimientos">Mant.</string>
+    <string name="nav_montajes">Montajes</string>
+    <style name="Theme.ClimaPro" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
