@@ -18,7 +18,7 @@ interface UpdateApi {
 @Singleton
 class UpdateChecker @Inject constructor(private val api: UpdateApi) {
 
-    private val repoUrl = "https://api.github.com/repos/TU_USUARIO/TU_REPO/releases/latest"
+    private val repoUrl = "https://api.github.com/repos/Enwattao/ClimaPro/releases/latest"
     private val versionActual = "1.0.0"
 
     suspend fun check(): UpdateInfo? = runCatching {
