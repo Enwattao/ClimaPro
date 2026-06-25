@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = hiltViewModel()
                                     Text("Gestión profesional", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(.5f))
                                 }
                             }
-                            Row {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 // Campanita animada de avisos
                                 val hayAvisos = state.avisosCount > 0
                                 val infiniteTransition = rememberInfiniteTransition(label = "bell")
@@ -108,12 +108,6 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = hiltViewModel()
                             "${state.montajesMes}", "Montajes mes", AzulPrimario)
                         KpiCard(Modifier.weight(1f), Icons.Default.Warning, Color(0xFFFFEEEE), Color(0xFFFF6B6B),
                             "${state.averiasActivas}", "Averías activas", Color(0xFFFF6B6B))
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        KpiCard(Modifier.weight(1f), Icons.Default.EuroSymbol, VerdeLight, VerdePrimario,
-                            state.totalCobradoMes.toEuros(), "Ingresos mes", VerdePrimario)
-                        KpiCard(Modifier.weight(1f), Icons.Default.TrendingDown, Color(0xFFFFEEEE), RojoPrimario,
-                            state.gastosMes.toEuros(), "Gastos mes", RojoPrimario)
                     }
 
                     // Próximos montajes

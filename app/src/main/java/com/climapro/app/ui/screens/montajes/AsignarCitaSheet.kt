@@ -35,7 +35,8 @@ fun AsignarCitaSheet(
     var horasEst by remember { mutableFloatStateOf(montaje.horasEstimadas.takeIf { it > 0 } ?: 3f) }
     var nota by remember { mutableStateOf("") }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState, containerColor = MaterialTheme.colorScheme.surface) {
         Column {
             // Cliente strip
             Row(

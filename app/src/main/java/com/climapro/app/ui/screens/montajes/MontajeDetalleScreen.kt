@@ -190,9 +190,21 @@ fun MontajeDetalleScreen(navController: NavController, id: Long, vm: MontajeDeta
                                         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
                                         val intent = Intent(Intent.ACTION_VIEW).apply {
                                             setDataAndType(uri, "application/pdf")
-                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
                                         }
-                                        context.startActivity(Intent.createChooser(intent, "Abrir albarán"))
+                                        val chooser = Intent.createChooser(intent, "Abrir albarán").apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        try {
+                                            context.startActivity(chooser)
+                                        } catch (e: android.content.ActivityNotFoundException) {
+                                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                                type = "application/pdf"
+                                                putExtra(Intent.EXTRA_STREAM, uri)
+                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            context.startActivity(Intent.createChooser(shareIntent, "Compartir albarán").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+                                        }
                                     } finally { generandoPdf = false }
                                 }
                             },

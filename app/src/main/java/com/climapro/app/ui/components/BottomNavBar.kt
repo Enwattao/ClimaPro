@@ -18,7 +18,7 @@ fun BottomNavBar(navController: NavController, listaEsperaBadge: Int = 0, averia
         NavItem("Montajes", Icons.Default.Build, Screen.Montajes.route, listaEsperaBadge),
         NavItem("Averías", Icons.Default.Warning, Screen.Averias.route, averiasActivasBadge),
         NavItem("Gastos", Icons.Default.Receipt, Screen.Gastos.route),
-        NavItem("Notas", Icons.Default.Note, Screen.Notas.route),
+        NavItem("Calendario", Icons.Default.CalendarMonth, Screen.Calendario.route),
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -30,9 +30,12 @@ fun BottomNavBar(navController: NavController, listaEsperaBadge: Int = 0, averia
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            popUpTo(Screen.Home.route) { saveState = true }
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                                inclusive = item.route == Screen.Home.route
+                            }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState = item.route != Screen.Home.route
                         }
                     }
                 },
