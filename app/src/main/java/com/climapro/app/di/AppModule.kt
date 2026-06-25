@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.climapro.app.data.db.AppDatabase
 import com.climapro.app.data.db.dao.*
+import com.climapro.app.data.db.AppDatabase.Companion.MIGRATION_1_2
+import com.climapro.app.data.db.AppDatabase.Companion.MIGRATION_2_3
 import com.climapro.app.util.UpdateApi
 import com.climapro.app.util.UpdateChecker
 import dagger.Module
@@ -25,7 +27,7 @@ object AppModule {
     @Singleton
     fun provideDatabase(@ApplicationContext ctx: Context): AppDatabase =
         Room.databaseBuilder(ctx, AppDatabase::class.java, "climapro.db")
-            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides fun provideClienteDao(db: AppDatabase): ClienteDao = db.clienteDao()
@@ -35,6 +37,7 @@ object AppModule {
     @Provides fun provideAlbaranDao(db: AppDatabase): AlbaranDao = db.albaranDao()
     @Provides fun provideAveriaDao(db: AppDatabase): AveriaDao = db.averiaDao()
     @Provides fun provideGastoDao(db: AppDatabase): GastoDao = db.gastoDao()
+    @Provides fun provideNotaDao(db: AppDatabase): NotaDao = db.notaDao()
 
     @Provides
     @Singleton

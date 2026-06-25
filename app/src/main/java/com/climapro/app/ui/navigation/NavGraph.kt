@@ -10,6 +10,7 @@ import com.climapro.app.ui.screens.ajustes.AjustesScreen
 import com.climapro.app.ui.screens.averias.AveriasScreen
 import com.climapro.app.ui.screens.calendario.CalendarioScreen
 import com.climapro.app.ui.screens.gastos.GastosScreen
+import com.climapro.app.ui.screens.notas.NotasScreen
 import com.climapro.app.ui.screens.home.HomeScreen
 import com.climapro.app.ui.screens.mantenimientos.*
 import com.climapro.app.ui.screens.montajes.*
@@ -33,6 +34,7 @@ sealed class Screen(val route: String) {
     }
     object Averias : Screen("averias")
     object Gastos : Screen("gastos")
+    object Notas : Screen("notas")
     object Ajustes : Screen("ajustes")
 }
 
@@ -61,6 +63,7 @@ fun NavGraph(navController: NavHostController) {
         ) { MantenimientoFormScreen(navController, it.arguments?.getLong("id")?.takeIf { v -> v != -1L }) }
         composable(Screen.Averias.route) { AveriasScreen(navController) }
         composable(Screen.Gastos.route) { GastosScreen(navController) }
+        composable(Screen.Notas.route) { NotasScreen(navController) }
         composable(Screen.Ajustes.route) { AjustesScreen(navController) }
     }
 }

@@ -18,7 +18,7 @@ fun BottomNavBar(navController: NavController, listaEsperaBadge: Int = 0, averia
         NavItem("Montajes", Icons.Default.Build, Screen.Montajes.route, listaEsperaBadge),
         NavItem("Averías", Icons.Default.Warning, Screen.Averias.route, averiasActivasBadge),
         NavItem("Gastos", Icons.Default.Receipt, Screen.Gastos.route),
-        NavItem("Ajustes", Icons.Default.Tune, Screen.Ajustes.route),
+        NavItem("Notas", Icons.Default.Note, Screen.Notas.route),
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

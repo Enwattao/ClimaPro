@@ -50,6 +50,10 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".ui.screens.notas.NotaRecordatorioReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>

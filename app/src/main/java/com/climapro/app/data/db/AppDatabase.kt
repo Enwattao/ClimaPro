@@ -8,8 +8,8 @@ import com.climapro.app.data.db.dao.*
 import com.climapro.app.data.db.entity.*
 
 @Database(
-    entities = [Cliente::class, Montaje::class, Mantenimiento::class, Foto::class, Albaran::class, Averia::class, Gasto::class],
-    version = 2,
+    entities = [Cliente::class, Montaje::class, Mantenimiento::class, Foto::class, Albaran::class, Averia::class, Gasto::class, Nota::class],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -20,6 +20,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun albaranDao(): AlbaranDao
     abstract fun averiaDao(): AveriaDao
     abstract fun gastoDao(): GastoDao
+    abstract fun notaDao(): NotaDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -53,6 +54,20 @@ abstract class AppDatabase : RoomDatabase() {
                     montajeId INTEGER,
                     averiaId INTEGER,
                     notas TEXT NOT NULL DEFAULT ''
+                )""")
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""CREATE TABLE IF NOT EXISTS notas (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    titulo TEXT NOT NULL,
+                    contenido TEXT NOT NULL DEFAULT '',
+                    recordatorioFecha INTEGER,
+                    recordatorioHora TEXT NOT NULL DEFAULT '',
+                    recordatorioNotificado INTEGER NOT NULL DEFAULT 0,
+                    fechaCreacion INTEGER NOT NULL DEFAULT 0
                 )""")
             }
         }
