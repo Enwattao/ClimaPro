@@ -158,7 +158,7 @@ fun AjustesScreen(navController: NavController, vm: AjustesViewModel = hiltViewM
                 }
             }
 
-            Text("ClimaPro v1.4.0", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text("ClimaPro v${com.climapro.app.BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
