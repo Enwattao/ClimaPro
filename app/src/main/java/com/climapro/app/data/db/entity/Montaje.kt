@@ -35,6 +35,7 @@ data class Montaje(
     val numMaquinas: Int = 1,
     val presupuesto: Double = 0.0,
     val costeMateriales: Double = 0.0,
+    val sueldoAyudante: Double = 0.0,
     val importeCobrado: Double = 0.0,
     val estado: EstadoMontaje = EstadoMontaje.LISTA_ESPERA,
     val estadoCobro: EstadoCobro = EstadoCobro.PENDIENTE,
@@ -46,6 +47,6 @@ data class Montaje(
     val urgente: Boolean = false,
     val fechaCreacion: Long = System.currentTimeMillis()
 ) {
-    val beneficio: Double get() = importeCobrado - costeMateriales
+    val beneficio: Double get() = importeCobrado - costeMateriales - sueldoAyudante
     val tieneCita: Boolean get() = fecha != null
 }

@@ -42,6 +42,9 @@ android {
             excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/NOTICE.md", "META-INF/LICENSE.md")
         }
     }
+    lint {
+        disable += "RemoveWorkManagerInitializer"
+    }
 }
 
 dependencies {

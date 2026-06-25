@@ -6,6 +6,7 @@ import com.climapro.app.data.db.AppDatabase
 import com.climapro.app.data.db.dao.*
 import com.climapro.app.data.db.AppDatabase.Companion.MIGRATION_1_2
 import com.climapro.app.data.db.AppDatabase.Companion.MIGRATION_2_3
+import com.climapro.app.data.db.AppDatabase.Companion.MIGRATION_3_4
 import com.climapro.app.util.UpdateApi
 import com.climapro.app.util.UpdateChecker
 import dagger.Module
@@ -27,7 +28,7 @@ object AppModule {
     @Singleton
     fun provideDatabase(@ApplicationContext ctx: Context): AppDatabase =
         Room.databaseBuilder(ctx, AppDatabase::class.java, "climapro.db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 
     @Provides fun provideClienteDao(db: AppDatabase): ClienteDao = db.clienteDao()

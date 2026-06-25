@@ -32,6 +32,7 @@ class MontajeFormViewModel @Inject constructor(private val repo: MontajeReposito
     var numMaquinas by mutableStateOf("1")
     var presupuesto by mutableStateOf("")
     var costeMateriales by mutableStateOf("")
+    var sueldoAyudante by mutableStateOf("")
     var observaciones by mutableStateOf("")
     var urgente by mutableStateOf(false)
     var conCita by mutableStateOf(false)
@@ -46,6 +47,7 @@ class MontajeFormViewModel @Inject constructor(private val repo: MontajeReposito
         marca = m.marcaMaquina; modelo = m.modeloMaquina; tipoMaquina = m.tipoMaquina
         numMaquinas = m.numMaquinas.toString(); presupuesto = if (m.presupuesto > 0) m.presupuesto.toString() else ""
         costeMateriales = if (m.costeMateriales > 0) m.costeMateriales.toString() else ""
+        sueldoAyudante = if (m.sueldoAyudante > 0) m.sueldoAyudante.toString() else ""
         observaciones = m.observaciones; urgente = m.urgente
         conCita = m.fecha != null; hora = m.hora
         horasEstimadas = if (m.horasEstimadas > 0) m.horasEstimadas.toString() else "3"
@@ -64,6 +66,7 @@ class MontajeFormViewModel @Inject constructor(private val repo: MontajeReposito
             numMaquinas = numMaquinas.toIntOrNull() ?: 1,
             presupuesto = presupuesto.toDoubleOrNull() ?: 0.0,
             costeMateriales = costeMateriales.toDoubleOrNull() ?: 0.0,
+            sueldoAyudante = sueldoAyudante.toDoubleOrNull() ?: 0.0,
             observaciones = observaciones, estado = estado, urgente = urgente
         )
         if (editId != null) repo.update(montaje) else repo.insert(montaje)
@@ -132,9 +135,9 @@ fun MontajeFormScreen(navController: NavController, editId: Long?, vm: MontajeFo
 
             SectionCard("Económico", Icons.Default.EuroSymbol) {
                 FormField("Presupuesto (€)", vm.presupuesto, { vm.presupuesto = it })
+                FormField("Coste materiales (€)", vm.costeMateriales, { vm.costeMateriales = it })
+                FormField("Sueldo ayudante (€)", vm.sueldoAyudante, { vm.sueldoAyudante = it })
                 FormField("Observaciones", vm.observaciones, { vm.observaciones = it }, maxLines = 3)
-                Text("Los gastos (materiales, sueldo ayudante, etc.) se registran en la sección Gastos.",
-                    style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             Button(
