@@ -92,7 +92,6 @@ fun MantenimientoFormScreen(navController: NavController, editId: Long?, vm: Man
             }
             SectionCard("Económico", Icons.Default.EuroSymbol) {
                 FormField("Precio (€)", vm.precio, { vm.precio = it })
-                FormField("Coste materiales (€)", vm.costeMateriales, { vm.costeMateriales = it })
             }
             Button(
                 onClick = { vm.guardar(editId) { navController.popBackStack() } },

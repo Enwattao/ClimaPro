@@ -118,7 +118,6 @@ fun MantenimientoDetalleScreen(navController: NavController, id: Long, vm: Mante
                 }
                 DetalleCard("Económico", Icons.Default.EuroSymbol) {
                     FieldRow("Precio", mantenimiento.precio.toEuros())
-                    FieldRow("Coste materiales", "- ${mantenimiento.costeMateriales.toEuros()}", valueColor = RojoPrimario)
                     FieldRow("Cobrado", mantenimiento.importeCobrado.toEuros(), valueColor = VerdePrimario)
                     Divider(Modifier.padding(vertical = 4.dp))
                     FieldRow("Beneficio", mantenimiento.beneficio.toEuros(), valueColor = if (mantenimiento.beneficio >= 0) VerdePrimario else RojoPrimario, bold = true)

@@ -135,7 +135,6 @@ fun MontajeFormScreen(navController: NavController, editId: Long?, vm: MontajeFo
 
             SectionCard("Económico", Icons.Default.EuroSymbol) {
                 FormField("Presupuesto (€)", vm.presupuesto, { vm.presupuesto = it })
-                FormField("Coste materiales (€)", vm.costeMateriales, { vm.costeMateriales = it })
                 FormField("Sueldo ayudante (€)", vm.sueldoAyudante, { vm.sueldoAyudante = it })
                 FormField("Observaciones", vm.observaciones, { vm.observaciones = it }, maxLines = 3)
             }

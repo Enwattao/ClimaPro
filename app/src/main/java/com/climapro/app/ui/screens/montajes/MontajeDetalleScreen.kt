@@ -164,7 +164,6 @@ fun MontajeDetalleScreen(navController: NavController, id: Long, vm: MontajeDeta
                 // Económico
                 DetalleCard("Control económico", Icons.Default.EuroSymbol) {
                     FieldRow("Presupuesto", m.presupuesto.toEuros())
-                    FieldRow("Coste materiales", "- ${m.costeMateriales.toEuros()}", valueColor = RojoPrimario)
                     FieldRow("Importe cobrado", m.importeCobrado.toEuros(), valueColor = VerdePrimario)
                     Divider(Modifier.padding(vertical = 4.dp))
                     FieldRow("Beneficio", m.beneficio.toEuros(), valueColor = if (m.beneficio >= 0) VerdePrimario else RojoPrimario, bold = true)
