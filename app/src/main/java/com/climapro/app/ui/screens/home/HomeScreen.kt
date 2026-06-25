@@ -1,5 +1,6 @@
 package com.climapro.app.ui.screens.home
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,8 +55,33 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = hiltViewModel()
                                 }
                             }
                             Row {
-                                IconButton(onClick = { navController.navigate(Screen.Calendario.route) }) {
-                                    Icon(Icons.Default.CalendarMonth, null, tint = Color.White.copy(.7f))
+                                // Campanita animada de avisos
+                                val hayAvisos = state.avisosCount > 0
+                                val infiniteTransition = rememberInfiniteTransition(label = "bell")
+                                val angle by infiniteTransition.animateFloat(
+                                    initialValue = if (hayAvisos) -18f else 0f,
+                                    targetValue = if (hayAvisos) 18f else 0f,
+                                    animationSpec = infiniteRepeatable(
+                                        animation = tween(350, easing = LinearEasing),
+                                        repeatMode = RepeatMode.Reverse
+                                    ),
+                                    label = "bellAngle"
+                                )
+                                BadgedBox(
+                                    badge = {
+                                        if (hayAvisos) Badge(containerColor = NaranjaPrimario) {
+                                            Text("${state.avisosCount}", color = Color.White, style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    },
+                                    modifier = Modifier.padding(4.dp)
+                                ) {
+                                    IconButton(onClick = { navController.navigate(Screen.Avisos.route) }) {
+                                        Icon(
+                                            Icons.Default.Notifications, null,
+                                            tint = Color.White.copy(.9f),
+                                            modifier = Modifier.graphicsLayer { rotationZ = if (hayAvisos) angle else 0f }
+                                        )
+                                    }
                                 }
                                 IconButton(onClick = { navController.navigate(Screen.Ajustes.route) }) {
                                     Icon(Icons.Default.Settings, null, tint = Color.White.copy(.7f))

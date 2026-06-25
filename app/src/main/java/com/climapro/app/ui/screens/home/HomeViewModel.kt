@@ -9,6 +9,7 @@ import com.climapro.app.data.repository.AveriaRepository
 import com.climapro.app.data.repository.GastoRepository
 import com.climapro.app.data.repository.MantenimientoRepository
 import com.climapro.app.data.repository.MontajeRepository
+import com.climapro.app.data.repository.NotaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -24,7 +25,8 @@ data class HomeUiState(
     val proximosMontajes: List<Montaje> = emptyList(),
     val proximasAverias: List<Averia> = emptyList(),
     val listaEsperaBadge: Int = 0,
-    val averiasActivasBadge: Int = 0
+    val averiasActivasBadge: Int = 0,
+    val avisosCount: Int = 0
 )
 
 @HiltViewModel
@@ -32,7 +34,8 @@ class HomeViewModel @Inject constructor(
     private val montajeRepo: MontajeRepository,
     private val mantenimientoRepo: MantenimientoRepository,
     private val averiaRepo: AveriaRepository,
-    private val gastoRepo: GastoRepository
+    private val gastoRepo: GastoRepository,
+    private val notaRepo: NotaRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -58,7 +61,8 @@ class HomeViewModel @Inject constructor(
                 montajeRepo.countListaEspera(),
                 averiaRepo.getAll(),
                 averiaRepo.countActivas(),
-                gastoRepo.getTotalEnRango(inicioMes, finMes)
+                gastoRepo.getTotalEnRango(inicioMes, finMes),
+                notaRepo.getAll()
             ) { args ->
                 val montajesMes = args[0] as List<Montaje>
                 val mantMes = args[1] as List<Mantenimiento>
@@ -67,18 +71,25 @@ class HomeViewModel @Inject constructor(
                 val todasAverias = args[4] as List<Averia>
                 val averiasActivas = args[5] as Int
                 val gastosMes = args[6] as Double
+                @Suppress("UNCHECKED_CAST")
+                val notas = args[7] as List<com.climapro.app.data.db.entity.Nota>
                 val cobradoMontajes = montajesMes.sumOf { it.importeCobrado }
                 val cobradoMant = mantMes.sumOf { it.importeCobrado }
+                val proxMontajes = programados.filter { it.fecha != null && it.fecha >= hoy && it.fecha <= en7dias }.take(4)
+                val proxAverias = todasAverias.filter { it.fecha != null && it.fecha >= hoy && it.fecha <= en7dias }.take(2)
+                val notasPendientes = notas.count { it.recordatorioFecha != null && it.recordatorioFecha >= hoy }
+                val avisosCount = proxMontajes.size + proxAverias.size + notasPendientes
                 HomeUiState(
                     montajesMes = montajesMes.size,
                     mantenimientosMes = mantMes.size,
                     totalCobradoMes = cobradoMontajes + cobradoMant,
                     gastosMes = gastosMes,
                     averiasActivas = averiasActivas,
-                    proximosMontajes = programados.filter { it.fecha != null && it.fecha >= hoy && it.fecha <= en7dias }.take(4),
-                    proximasAverias = todasAverias.filter { it.fecha != null && it.fecha >= hoy && it.fecha <= en7dias }.take(2),
+                    proximosMontajes = proxMontajes,
+                    proximasAverias = proxAverias,
                     listaEsperaBadge = badge,
-                    averiasActivasBadge = averiasActivas
+                    averiasActivasBadge = averiasActivas,
+                    avisosCount = avisosCount
                 )
             }.collect { _state.value = it }
         }

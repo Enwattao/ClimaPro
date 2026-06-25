@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.climapro.app.ui.screens.ajustes.AjustesScreen
+import com.climapro.app.ui.screens.avisos.AvisosScreen
 import com.climapro.app.ui.screens.averias.AveriasScreen
 import com.climapro.app.ui.screens.calendario.CalendarioScreen
 import com.climapro.app.ui.screens.gastos.GastosScreen
@@ -36,6 +37,7 @@ sealed class Screen(val route: String) {
     object Gastos : Screen("gastos")
     object Notas : Screen("notas")
     object Ajustes : Screen("ajustes")
+    object Avisos : Screen("avisos")
 }
 
 @Composable
@@ -65,5 +67,6 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Gastos.route) { GastosScreen(navController) }
         composable(Screen.Notas.route) { NotasScreen(navController) }
         composable(Screen.Ajustes.route) { AjustesScreen(navController) }
+        composable(Screen.Avisos.route) { AvisosScreen(navController) }
     }
 }

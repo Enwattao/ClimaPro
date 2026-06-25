@@ -1,5 +1,12 @@
 package com.climapro.app.ui.screens.ajustes
 
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -56,6 +64,19 @@ class AjustesViewModel @Inject constructor(
         updateInfo = updateChecker.check()
         checkingUpdate = false
     }
+
+    fun descargarInstalar(context: Context) {
+        val url = updateInfo?.apkUrl?.takeIf { it.isNotEmpty() }
+            ?: "https://github.com/Enwattao/ClimaPro/releases/latest/download/ClimaPro.apk"
+        val request = DownloadManager.Request(Uri.parse(url)).apply {
+            setTitle("ClimaPro - Actualizando...")
+            setDescription("Descargando nueva versión")
+            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, "ClimaPro.apk")
+            setMimeType("application/vnd.android.package-archive")
+        }
+        (context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +93,7 @@ fun AjustesScreen(navController: NavController, vm: AjustesViewModel = hiltViewM
     var editNombre by remember(empresaNombre) { mutableStateOf(empresaNombre) }
     var editTel by remember(empresaTelefono) { mutableStateOf(empresaTelefono) }
     var editDir by remember(empresaDireccion) { mutableStateOf(empresaDireccion) }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -96,6 +118,19 @@ fun AjustesScreen(navController: NavController, vm: AjustesViewModel = hiltViewM
                 SwitchRow("1 hora antes", notif1h) { vm.setNotif1h(it) }
                 SwitchRow("El día del trabajo", notifDia) { vm.setNotifDia(it) }
                 SwitchRow("Cobros pendientes", notifCobros) { vm.setNotifCobros(it) }
+                HorizontalDivider()
+                SettingsButton(Icons.Default.VolumeUp, "Sonido y vibración del sistema") {
+                    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        }
+                    } else {
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = android.net.Uri.fromParts("package", context.packageName, null)
+                        }
+                    }
+                    context.startActivity(intent)
+                }
             }
 
             SettingsSection("Copia de seguridad", Icons.Default.Backup) {
@@ -113,7 +148,7 @@ fun AjustesScreen(navController: NavController, vm: AjustesViewModel = hiltViewM
                             Text(if (info.hayActualizacion) "Nueva versión: ${info.version}" else "App actualizada", style = MaterialTheme.typography.labelLarge)
                             if (info.hayActualizacion) {
                                 Text(info.changelog, style = MaterialTheme.typography.bodySmall)
-                                Button(onClick = {}, modifier = Modifier.fillMaxWidth()) { Text("Descargar e instalar") }
+                                Button(onClick = { vm.descargarInstalar(context) }, modifier = Modifier.fillMaxWidth()) { Text("Descargar e instalar") }
                             }
                         }
                     }
