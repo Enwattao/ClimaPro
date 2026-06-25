@@ -132,8 +132,9 @@ fun MontajeFormScreen(navController: NavController, editId: Long?, vm: MontajeFo
 
             SectionCard("Económico", Icons.Default.EuroSymbol) {
                 FormField("Presupuesto (€)", vm.presupuesto, { vm.presupuesto = it })
-                FormField("Coste materiales (€)", vm.costeMateriales, { vm.costeMateriales = it })
                 FormField("Observaciones", vm.observaciones, { vm.observaciones = it }, maxLines = 3)
+                Text("Los gastos (materiales, sueldo ayudante, etc.) se registran en la sección Gastos.",
+                    style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             Button(

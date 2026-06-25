@@ -12,13 +12,12 @@ import com.climapro.app.ui.navigation.Screen
 data class NavItem(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val route: String, val badge: Int = 0)
 
 @Composable
-fun BottomNavBar(navController: NavController, listaEsperaBadge: Int = 0) {
+fun BottomNavBar(navController: NavController, listaEsperaBadge: Int = 0, averiasActivasBadge: Int = 0) {
     val items = listOf(
         NavItem("Inicio", Icons.Default.Home, Screen.Home.route),
-        NavItem("Calendario", Icons.Default.CalendarMonth, Screen.Calendario.route),
         NavItem("Montajes", Icons.Default.Build, Screen.Montajes.route, listaEsperaBadge),
-        NavItem("Mant.", Icons.Default.Settings, Screen.Mantenimientos.route),
-        NavItem("Consultas", Icons.Default.BarChart, Screen.Consultas.route),
+        NavItem("Averías", Icons.Default.Warning, Screen.Averias.route, averiasActivasBadge),
+        NavItem("Gastos", Icons.Default.Receipt, Screen.Gastos.route),
         NavItem("Ajustes", Icons.Default.Tune, Screen.Ajustes.route),
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()

@@ -23,18 +23,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.climapro.app.data.db.entity.*
+import com.climapro.app.data.preferences.AppPreferences
 import com.climapro.app.data.repository.MontajeRepository
+import com.climapro.app.util.PdfGenerator
 import com.climapro.app.ui.navigation.Screen
 import com.climapro.app.ui.theme.*
 import com.climapro.app.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.core.content.FileProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MontajeDetalleViewModel @Inject constructor(private val repo: MontajeRepository) : ViewModel() {
+class MontajeDetalleViewModel @Inject constructor(
+    private val repo: MontajeRepository,
+    private val pdfGenerator: PdfGenerator,
+    private val prefs: AppPreferences
+) : ViewModel() {
     private val _montaje = MutableStateFlow<Montaje?>(null)
     val montaje: StateFlow<Montaje?> = _montaje
 
@@ -49,6 +58,12 @@ class MontajeDetalleViewModel @Inject constructor(private val repo: MontajeRepos
             importeCobrado = importe, metodoPago = metodo, fechaCobro = System.currentTimeMillis()))
         _montaje.value = repo.getById(m.id)
     }
+    suspend fun generarAlbaran(m: Montaje) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        val nombre = prefs.empresaNombre.first()
+        val tel = prefs.empresaTelefono.first()
+        val dir = prefs.empresaDireccion.first()
+        pdfGenerator.generarAlbaranMontaje(m, "MT-${String.format("%05d", m.id)}", nombre, tel, dir)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +73,8 @@ fun MontajeDetalleScreen(navController: NavController, id: Long, vm: MontajeDeta
     val context = LocalContext.current
     var showEliminar by remember { mutableStateOf(false) }
     var showCobro by remember { mutableStateOf(false) }
+    var generandoPdf by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(id) { vm.cargar(id) }
 
@@ -106,8 +123,20 @@ fun MontajeDetalleScreen(navController: NavController, id: Long, vm: MontajeDeta
                 // Cliente
                 DetalleCard("Cliente", Icons.Default.Person) {
                     FieldRow("Nombre", m.nombreCliente)
-                    FieldRow("Teléfono", m.telefono, clickable = true) {
-                        context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${m.telefono}")))
+                    Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Teléfono", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(m.telefono, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+                            if (m.telefono.isNotEmpty()) {
+                                OutlinedButton(onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${m.telefono}"))) },
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                    modifier = Modifier.height(28.dp)) {
+                                    Icon(Icons.Default.Phone, null, modifier = Modifier.size(12.dp))
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("Llamar", style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        }
                     }
                     FieldRow("Dirección", m.direccion, clickable = true) {
                         val uri = Uri.parse("geo:0,0?q=${Uri.encode(m.direccion)}")
@@ -152,11 +181,26 @@ fun MontajeDetalleScreen(navController: NavController, id: Long, vm: MontajeDeta
                 // Acciones
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = {}, modifier = Modifier.weight(1f),
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    generandoPdf = true
+                                    try {
+                                        val file = vm.generarAlbaran(m)
+                                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                                            setDataAndType(uri, "application/pdf")
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        context.startActivity(Intent.createChooser(intent, "Abrir albarán"))
+                                    } finally { generandoPdf = false }
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            enabled = !generandoPdf,
                             colors = ButtonDefaults.buttonColors(containerColor = AzulPrimario)) {
-                            Icon(Icons.Default.PictureAsPdf, null, modifier = Modifier.size(16.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text("Albarán PDF")
+                            if (generandoPdf) CircularProgressIndicator(Modifier.size(14.dp), color = Color.White, strokeWidth = 2.dp)
+                            else { Icon(Icons.Default.PictureAsPdf, null, modifier = Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("Albarán PDF") }
                         }
                         if (m.estado == EstadoMontaje.PENDIENTE || m.estado == EstadoMontaje.EN_CURSO) {
                             Button(onClick = { vm.marcarRealizado(m) }, modifier = Modifier.weight(1f),

@@ -24,13 +24,17 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext ctx: Context): AppDatabase =
-        Room.databaseBuilder(ctx, AppDatabase::class.java, "climapro.db").build()
+        Room.databaseBuilder(ctx, AppDatabase::class.java, "climapro.db")
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides fun provideClienteDao(db: AppDatabase): ClienteDao = db.clienteDao()
     @Provides fun provideMontajeDao(db: AppDatabase): MontajeDao = db.montajeDao()
     @Provides fun provideMantenimientoDao(db: AppDatabase): MantenimientoDao = db.mantenimientoDao()
     @Provides fun provideFotoDao(db: AppDatabase): FotoDao = db.fotoDao()
     @Provides fun provideAlbaranDao(db: AppDatabase): AlbaranDao = db.albaranDao()
+    @Provides fun provideAveriaDao(db: AppDatabase): AveriaDao = db.averiaDao()
+    @Provides fun provideGastoDao(db: AppDatabase): GastoDao = db.gastoDao()
 
     @Provides
     @Singleton

@@ -62,6 +62,22 @@ fun TipoMaquina.label() = when (this) {
     TipoMaquina.OTRO -> "Otro"
 }
 
+fun EstadoAveria.label() = when (this) {
+    EstadoAveria.PENDIENTE -> "Pendiente"
+    EstadoAveria.EN_CURSO -> "En curso"
+    EstadoAveria.RESUELTA -> "Resuelta"
+    EstadoAveria.COBRADA -> "Cobrada"
+}
+
+fun CategoriaGasto.label() = when (this) {
+    CategoriaGasto.MATERIALES -> "Materiales"
+    CategoriaGasto.SUELDO_AYUDANTE -> "Sueldo ayudante"
+    CategoriaGasto.HERRAMIENTAS -> "Herramientas"
+    CategoriaGasto.COMBUSTIBLE -> "Combustible"
+    CategoriaGasto.SEGUROS -> "Seguros"
+    CategoriaGasto.OTROS -> "Otros"
+}
+
 fun Double.toEuros(): String = String.format(Locale("es"), "%.2f €", this)
 
 fun iniciales(nombre: String): String {

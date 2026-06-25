@@ -63,6 +63,7 @@ class CalendarioViewModel @Inject constructor(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarioScreen(navController: NavController, vm: CalendarioViewModel = hiltViewModel()) {
     val anio by vm.anio.collectAsState()
@@ -97,16 +98,24 @@ fun CalendarioScreen(navController: NavController, vm: CalendarioViewModel = hil
     val mantHoy = mantDelDia(diaSeleccionado)
     val fechaLabel = Calendar.getInstance().apply { set(anio, mes, diaSeleccionado) }.timeInMillis.toFechaLarga().replaceFirstChar { it.uppercase() }
 
-    Scaffold(bottomBar = { BottomNavBar(navController) }, containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Agenda") },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface))
+        },
+        bottomBar = { BottomNavBar(navController) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { padding ->
         LazyColumn(Modifier.fillMaxSize().padding(padding)) {
             item {
-                Box(Modifier.fillMaxWidth().background(AzulOscuro).padding(16.dp)) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Card(modifier = Modifier.fillMaxWidth().padding(12.dp), shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), elevation = CardDefaults.cardElevation(0.dp)) {
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         // Nav mes
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { vm.anterior() }) { Icon(Icons.Default.ChevronLeft, null, tint = Color.White) }
-                            Text("${monthNames[mes]} $anio", style = MaterialTheme.typography.titleLarge, color = Color.White)
-                            IconButton(onClick = { vm.siguiente() }) { Icon(Icons.Default.ChevronRight, null, tint = Color.White) }
+                            IconButton(onClick = { vm.anterior() }) { Icon(Icons.Default.ChevronLeft, null, tint = AzulPrimario) }
+                            Text("${monthNames[mes]} $anio", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                            IconButton(onClick = { vm.siguiente() }) { Icon(Icons.Default.ChevronRight, null, tint = AzulPrimario) }
                         }
                         // Leyenda
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -117,7 +126,7 @@ fun CalendarioScreen(navController: NavController, vm: CalendarioViewModel = hil
                         Row(Modifier.fillMaxWidth()) {
                             listOf("L","M","X","J","V","S","D").forEach { d ->
                                 Text(d, Modifier.weight(1f), textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelSmall, color = Color.White.copy(.4f))
+                                    style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                         // Días
@@ -134,20 +143,28 @@ fun CalendarioScreen(navController: NavController, vm: CalendarioViewModel = hil
                                     val esSeleccionado = esValido && d == diaSeleccionado
                                     val mtsDelDia = if (esValido) montajesDelDia(d) else emptyList()
                                     val mantDelDia = if (esValido) mantDelDia(d) else emptyList()
-
+                                    val bgColor = when {
+                                        esSeleccionado -> AzulPrimario
+                                        esHoy -> AzulLight
+                                        else -> Color.Transparent
+                                    }
+                                    val textColor = when {
+                                        esSeleccionado -> Color.White
+                                        esHoy -> AzulPrimario
+                                        else -> MaterialTheme.colorScheme.onSurface
+                                    }
                                     Box(
                                         Modifier.weight(1f).aspectRatio(1f).padding(2.dp)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(if (esSeleccionado) AzulPrimario else if (esHoy) Color.White.copy(.1f) else Color.Transparent)
+                                            .background(bgColor)
                                             .clickable(enabled = esValido) { diaSeleccionado = d },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             if (esValido) {
-                                                Text("$d", style = MaterialTheme.typography.labelMedium,
-                                                    color = if (esSeleccionado) Color.White else if (esHoy) Color.White else Color.White.copy(.7f))
+                                                Text("$d", style = MaterialTheme.typography.labelMedium, color = textColor)
                                                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.height(6.dp)) {
-                                                    if (mtsDelDia.isNotEmpty()) Box(Modifier.size(4.dp).clip(CircleShape).background(AzulPrimario))
+                                                    if (mtsDelDia.isNotEmpty()) Box(Modifier.size(4.dp).clip(CircleShape).background(if (esSeleccionado) Color.White else AzulPrimario))
                                                     if (mantDelDia.isNotEmpty()) { Spacer(Modifier.width(2.dp)); Box(Modifier.size(4.dp).clip(CircleShape).background(VerdePrimario)) }
                                                 }
                                             }
@@ -197,7 +214,7 @@ fun CalendarioScreen(navController: NavController, vm: CalendarioViewModel = hil
 private fun LegendItem(color: Color, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
-        Text(text, style = MaterialTheme.typography.labelSmall, color = Color.White.copy(.6f))
+        Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
