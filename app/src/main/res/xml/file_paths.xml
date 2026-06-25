@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-files-path name="pdf" path="Documents/" />
+    <external-files-path name="pdf" path="Albaranes/" />
+    <external-files-path name="pdf_docs" path="Documents/" />
     <external-files-path name="images" path="Pictures/" />
-    <cache-path name="cache" path="." />
+    <files-path name="internal_pdf" path="Albaranes/" />
     <files-path name="files" path="." />
+    <cache-path name="cache" path="." />
 </paths>

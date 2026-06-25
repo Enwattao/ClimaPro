@@ -28,6 +28,9 @@ class PdfGenerator @Inject constructor(@ApplicationContext private val context: 
     private val boldFont = Font(Font.FontFamily.HELVETICA, 9f, Font.BOLD)
     private val smallFont = Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL, BaseColor.GRAY)
 
+    private fun albaranesDir(): File =
+        File(context.getExternalFilesDir(null) ?: context.filesDir, "Albaranes").apply { mkdirs() }
+
     fun generarAlbaranMontaje(
         montaje: Montaje,
         numeroAlbaran: String,
@@ -37,7 +40,7 @@ class PdfGenerator @Inject constructor(@ApplicationContext private val context: 
         logoPath: String? = null,
         firmaPath: String? = null
     ): File {
-        val dir = File(context.getExternalFilesDir(null), "Albaranes").apply { mkdirs() }
+        val dir = albaranesDir()
         val file = File(dir, "albaran_$numeroAlbaran.pdf")
         val doc = Document(PageSize.A4, 40f, 40f, 40f, 40f)
         PdfWriter.getInstance(doc, FileOutputStream(file))
@@ -86,7 +89,7 @@ class PdfGenerator @Inject constructor(@ApplicationContext private val context: 
         logoPath: String? = null,
         firmaPath: String? = null
     ): File {
-        val dir = File(context.getExternalFilesDir(null), "Albaranes").apply { mkdirs() }
+        val dir = albaranesDir()
         val file = File(dir, "albaran_$numeroAlbaran.pdf")
         val doc = Document(PageSize.A4, 40f, 40f, 40f, 40f)
         PdfWriter.getInstance(doc, FileOutputStream(file))
