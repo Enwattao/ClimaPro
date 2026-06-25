@@ -3,8 +3,10 @@ package com.climapro.app.ui.screens.montajes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -37,101 +39,81 @@ fun AsignarCitaSheet(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState, containerColor = MaterialTheme.colorScheme.surface) {
-        Column {
-            // Cliente strip
-            Row(
-                Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Box(Modifier.size(36.dp).clip(CircleShape).background(AzulLight), contentAlignment = Alignment.Center) {
-                    Text(iniciales(montaje.nombreCliente), style = MaterialTheme.typography.labelMedium, color = AzulPrimario)
+        val fechaSeleccionada = Calendar.getInstance().apply {
+            set(selectedYear, selectedMonth, selectedDay, 0, 0, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val mesLabel = SimpleDateFormat("dd MMM", Locale("es")).format(Date(fechaSeleccionada))
+
+        Column(Modifier.fillMaxWidth()) {
+            // Contenido scrollable
+            Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+                // Cliente strip
+                Row(
+                    Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(horizontal = 18.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Box(Modifier.size(36.dp).clip(CircleShape).background(AzulLight), contentAlignment = Alignment.Center) {
+                        Text(iniciales(montaje.nombreCliente), style = MaterialTheme.typography.labelMedium, color = AzulPrimario)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        Text(montaje.nombreCliente, style = MaterialTheme.typography.labelLarge)
+                        Text(montaje.marcaMaquina + " " + montaje.tipoMaquina.label() + " · " + montaje.direccion.take(28),
+                            style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                    }
+                    Box(Modifier.clip(RoundedCornerShape(8.dp)).background(NaranjaLight).padding(horizontal = 8.dp, vertical = 3.dp)) {
+                        Text("En espera", style = MaterialTheme.typography.labelSmall, color = NaranjaPrimario)
+                    }
                 }
-                Column(Modifier.weight(1f)) {
-                    Text(montaje.nombreCliente, style = MaterialTheme.typography.labelLarge)
-                    Text(montaje.marcaMaquina + " " + montaje.tipoMaquina.label() + " · " + montaje.direccion.take(28),
-                        style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-                }
-                Box(Modifier.clip(RoundedCornerShape(8.dp)).background(NaranjaLight).padding(horizontal = 8.dp, vertical = 3.dp)) {
-                    Text("En espera", style = MaterialTheme.typography.labelSmall, color = NaranjaPrimario)
+
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text("Selecciona el día", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    MiniCalendar(
+                        year = selectedYear, month = selectedMonth, selectedDay = selectedDay,
+                        onPrev = {
+                            val c = Calendar.getInstance().apply { set(selectedYear, selectedMonth, 1); add(Calendar.MONTH, -1) }
+                            selectedYear = c.get(Calendar.YEAR); selectedMonth = c.get(Calendar.MONTH)
+                        },
+                        onNext = {
+                            val c = Calendar.getInstance().apply { set(selectedYear, selectedMonth, 1); add(Calendar.MONTH, 1) }
+                            selectedYear = c.get(Calendar.YEAR); selectedMonth = c.get(Calendar.MONTH)
+                        },
+                        onDaySelect = { selectedDay = it }
+                    )
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        OutlinedTextField(value = hora, onValueChange = { hora = it }, label = { Text("Hora inicio") },
+                            leadingIcon = { Icon(Icons.Default.AccessTime, null) }, modifier = Modifier.weight(1f), singleLine = true)
+                        OutlinedTextField(value = "${horasEst.toInt()} h", onValueChange = {}, label = { Text("Duración") },
+                            readOnly = true, modifier = Modifier.weight(1f), singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = AzulPrimario, focusedTextColor = AzulPrimario, unfocusedTextColor = AzulPrimario))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(1f, 2f, 3f, 4f, 6f, 8f).forEach { h ->
+                            FilterChip(selected = horasEst == h, onClick = { horasEst = h },
+                                label = { Text(if (h == 8f) "Todo el día" else "${h.toInt()}h") })
+                        }
+                    }
+                    OutlinedTextField(value = nota, onValueChange = { nota = it },
+                        label = { Text("Nota (opcional)") }, leadingIcon = { Icon(Icons.Default.Notes, null) },
+                        modifier = Modifier.fillMaxWidth(), maxLines = 2)
                 }
             }
 
-            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                // Mini calendario
-                Text("Selecciona el día", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                MiniCalendar(
-                    year = selectedYear, month = selectedMonth, selectedDay = selectedDay,
-                    onPrev = {
-                        val c = Calendar.getInstance().apply { set(selectedYear, selectedMonth, 1); add(Calendar.MONTH, -1) }
-                        selectedYear = c.get(Calendar.YEAR); selectedMonth = c.get(Calendar.MONTH)
-                    },
-                    onNext = {
-                        val c = Calendar.getInstance().apply { set(selectedYear, selectedMonth, 1); add(Calendar.MONTH, 1) }
-                        selectedYear = c.get(Calendar.YEAR); selectedMonth = c.get(Calendar.MONTH)
-                    },
-                    onDaySelect = { selectedDay = it }
-                )
-
-                // Hora y duración
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedTextField(
-                        value = hora, onValueChange = { hora = it },
-                        label = { Text("Hora inicio") },
-                        leadingIcon = { Icon(Icons.Default.AccessTime, null) },
-                        modifier = Modifier.weight(1f), singleLine = true
-                    )
-                    OutlinedTextField(
-                        value = "${horasEst.toInt()} h", onValueChange = {},
-                        label = { Text("Duración") },
-                        readOnly = true,
-                        modifier = Modifier.weight(1f), singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = AzulPrimario,
-                            focusedTextColor = AzulPrimario, unfocusedTextColor = AzulPrimario)
-                    )
+            // Botones siempre visibles al fondo
+            HorizontalDivider()
+            Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) { Text("Cancelar") }
+                Button(
+                    onClick = { onConfirm(fechaSeleccionada, hora, horasEst) },
+                    modifier = Modifier.weight(2f),
+                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrimario)
+                ) {
+                    Icon(Icons.Default.CalendarMonth, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Confirmar · $mesLabel")
                 }
-
-                // Chips de duración rápida
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(1f, 2f, 3f, 4f, 6f, 8f).forEach { h ->
-                        FilterChip(
-                            selected = horasEst == h,
-                            onClick = { horasEst = h },
-                            label = { Text(if (h == 8f) "Todo el día" else "${h.toInt()}h") }
-                        )
-                    }
-                }
-
-                // Nota opcional
-                OutlinedTextField(
-                    value = nota, onValueChange = { nota = it },
-                    label = { Text("Nota para este día (opcional)") },
-                    leadingIcon = { Icon(Icons.Default.Notes, null) },
-                    modifier = Modifier.fillMaxWidth(), maxLines = 2
-                )
-
-                // Botones
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
-                        Text("Cancelar")
-                    }
-                    val fechaSeleccionada = Calendar.getInstance().apply {
-                        set(selectedYear, selectedMonth, selectedDay, 0, 0, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }.timeInMillis
-                    val mesLabel = SimpleDateFormat("dd MMM", Locale("es")).format(Date(fechaSeleccionada))
-                    Button(
-                        onClick = { onConfirm(fechaSeleccionada, hora, horasEst) },
-                        modifier = Modifier.weight(2f),
-                        colors = ButtonDefaults.buttonColors(containerColor = AzulPrimario)
-                    ) {
-                        Icon(Icons.Default.CalendarMonth, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Confirmar · $mesLabel")
-                    }
-                }
-                Spacer(Modifier.height(8.dp))
             }
         }
     }
