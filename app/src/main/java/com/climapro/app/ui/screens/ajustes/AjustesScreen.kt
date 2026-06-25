@@ -133,22 +133,14 @@ fun AjustesScreen(navController: NavController, vm: AjustesViewModel = hiltViewM
                 }
             }
 
-            SettingsSection("Copia de seguridad", Icons.Default.Backup) {
-                SettingsButton(Icons.Default.Upload, "Exportar base de datos") { }
-                SettingsButton(Icons.Default.Download, "Importar base de datos") { }
-                SettingsButton(Icons.Default.SaveAlt, "Copia de seguridad completa") { }
-                SettingsButton(Icons.Default.Restore, "Restaurar copia") { }
-            }
-
             SettingsSection("Actualización", Icons.Default.SystemUpdate) {
                 if (vm.updateInfo != null) {
                     val info = vm.updateInfo!!
                     Card(colors = CardDefaults.cardColors(containerColor = if (info.hayActualizacion) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant)) {
                         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(if (info.hayActualizacion) "Nueva versión: ${info.version}" else "App actualizada", style = MaterialTheme.typography.labelLarge)
-                            if (info.hayActualizacion) {
+                            Text(if (info.hayActualizacion) "Nueva versión disponible: ${info.version}" else "La app está actualizada", style = MaterialTheme.typography.labelLarge)
+                            if (info.hayActualizacion && info.changelog.isNotBlank()) {
                                 Text(info.changelog, style = MaterialTheme.typography.bodySmall)
-                                Button(onClick = { vm.descargarInstalar(context) }, modifier = Modifier.fillMaxWidth()) { Text("Descargar e instalar") }
                             }
                         }
                     }
@@ -156,9 +148,17 @@ fun AjustesScreen(navController: NavController, vm: AjustesViewModel = hiltViewM
                 SettingsButton(Icons.Default.Refresh, if (vm.checkingUpdate) "Comprobando..." else "Comprobar actualizaciones") {
                     if (!vm.checkingUpdate) vm.checkUpdate()
                 }
+                Button(
+                    onClick = { vm.descargarInstalar(context) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Download, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Descargar e instalar última versión")
+                }
             }
 
-            Text("ClimaPro v1.0.0", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text("ClimaPro v1.4.0", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
